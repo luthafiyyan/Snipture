@@ -17,11 +17,10 @@ Buat kamu yang suka kasih catatan visual, highlight bagian penting, atau sekadar
 
 ## 🚀 Getting Started
 Clone repo ini dulu:
-git clone https://github.com/luthafiyyan/Snipture.git
-cd Snipture
-
-Install dependencies: npm install
-Run project: npm start
+> - git clone https://github.com/luthafiyyan/Snipture.git
+> - cd Snipture
+> - Install dependencies: npm install
+> - Run project: npm start
 
 ## 🖼️ Preview
 <img width="720" height="907" alt="image" src="https://github.com/user-attachments/assets/537cdd32-eab3-4ab1-80d3-0d13f8379ae3" />
