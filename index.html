@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snipture - Modern Image Annotation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://i.postimg.cc/tJR5mTwy/Sniptuire-Favicon.png" type="image/png">
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1', // Indigo 500
+                        secondary: '#8b5cf6', // Violet 500
+                        dark: '#0f172a', // Slate 900
+                        'dark-surface': '#1e293b', // Slate 800
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-100 dark:bg-dark text-slate-800 dark:text-slate-100 transition-colors duration-200 h-screen flex flex-col">
+
+    <!-- Top Navigation / Toolbar -->
+    <header class="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-4 shadow-sm z-20 shrink-0">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+                <img src="https://i.postimg.cc/CMZQwV8X/Snipture-Logo.png" alt="Snipture Logo" class="h-8 object-contain">
+            </div>
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+            
+            <label class="cursor-pointer bg-primary hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                <i class="fa-solid fa-upload"></i>
+                <span class="hidden sm:inline">Upload</span>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            </label>
+            
+            <div class="flex items-center gap-2">
+                <button id="resetBtn" class="border border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-500 hover:text-red-600 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2" title="Reset / New Image">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+
+                <button id="copyBtn" class="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2 text-gray-700 dark:text-gray-200" title="Copy to Clipboard">
+                    <i class="fa-regular fa-copy"></i>
+                    <span class="hidden sm:inline">Copy</span>
+                </button>
+
+                <button id="exportBtn" class="border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <i class="fa-solid fa-download"></i>
+                    <span class="hidden sm:inline">Export</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition relative active-tool bg-white dark:bg-gray-600 text-primary shadow-sm" data-tool="select" data-tooltip="Select / Pan (Space)">
+                <i class="fa-solid fa-arrow-pointer"></i>
+            </button>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="rect" data-tooltip="Rectangle">
+                <i class="fa-regular fa-square"></i>
+            </button>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="circle" data-tooltip="Circle">
+                <i class="fa-regular fa-circle"></i>
+            </button>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="arrow" data-tooltip="Arrow">
+                <i class="fa-solid fa-arrow-right-long"></i>
+            </button>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="freehand" data-tooltip="Draw">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-primary hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="text" data-tooltip="Text">
+                <i class="fa-solid fa-font"></i>
+            </button>
+            <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-yellow-500 hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="highlight" data-tooltip="Highlight">
+                <i class="fa-solid fa-highlighter"></i>
+            </button>
+            <button class="tool-btn p-2 rounded-lg text-gray-500 hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700 transition relative" data-tool="blur" data-tooltip="Blur/Privacy">
+                <i class="fa-solid fa-droplet-slash"></i>
+            </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 mr-2">
+                <input type="color" id="colorPicker" value="#ef4444" class="w-8 h-8 rounded cursor-pointer border-0 p-0 bg-transparent" title="Color">
+                <div class="flex items-center gap-2 group relative">
+                    <i class="fa-solid fa-circle text-[8px] text-gray-400"></i>
+                    <input type="range" id="lineWidth" min="1" max="30" value="4" 
+                           class="w-24 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-lg cursor-pointer accent-primary hover:accent-indigo-500 transition-all">
+                    <span id="lineWidthValue" class="text-xs font-mono w-8 text-right text-gray-500 dark:text-gray-400">4px</span>
+                    <div class="absolute bottom-[-30px] left-1/2 -translate-x-1/2 bg-dark-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-nowrap z-50">
+                        Stroke Width
+                    </div>
+                </div>
+            </div>
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+            <button id="undoBtn" class="text-gray-500 hover:text-slate-800 dark:hover:text-white transition" title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+            <button id="redoBtn" class="text-gray-500 hover:text-slate-800 dark:hover:text-white transition" title="Redo (Ctrl+Y)"><i class="fa-solid fa-rotate-right"></i></button>
+            <button id="toggleTheme" class="ml-2 w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-yellow-600 dark:text-yellow-400 transition"><i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:block"></i></button>
+            <button id="toggleSidebar" class="md:hidden text-gray-500"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        <main class="flex-1 relative canvas-bg overflow-hidden flex items-center justify-center" id="canvasContainer">
+            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 pointer-events-none">
+                <i class="fa-regular fa-image text-6xl mb-4 opacity-50"></i>
+                <p class="text-lg font-medium">Drag & Drop or Paste (Ctrl+V)</p>
+                <p class="text-sm">or use the Upload button</p>
+            </div>
+            <canvas id="mainCanvas" class="shadow-2xl shadow-black/20 cursor-crosshair transition-shadow duration-300"></canvas>
+            <input type="text" id="textInput" class="fixed hidden border border-dashed border-primary outline-none p-1 z-50 font-sans shadow-xl rounded-sm bg-white/90 dark:bg-black/90 backdrop-blur-sm" autocomplete="off" placeholder="Type here...">
+            <div class="absolute bottom-6 left-6 flex gap-2 bg-white dark:bg-dark-surface p-1.5 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+                <button id="zoomOut" class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"><i class="fa-solid fa-minus"></i></button>
+                <span id="zoomLevel" class="flex items-center justify-center w-12 text-xs font-mono text-gray-500">100%</span>
+                <button id="zoomIn" class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"><i class="fa-solid fa-plus"></i></button>
+                <button id="fitZoom" class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300" title="Fit to Screen"><i class="fa-solid fa-compress"></i></button>
+            </div>
+        </main>
+
+        <aside id="sidebar" class="w-64 bg-white dark:bg-dark-surface border-l border-gray-200 dark:border-gray-700 flex flex-col transition-transform duration-300 absolute md:relative right-0 h-full z-10 translate-x-full md:translate-x-0">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 class="font-semibold text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">Layers</h3>
+                <span id="layerCount" class="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="historyList" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                <button id="clearAllBtn" class="w-full py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-trash-can"></i> Clear Annotations
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- NEW FOOTER -->
+    <footer class="bg-white dark:bg-dark-surface border-t border-gray-200 dark:border-gray-700 py-2 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 shrink-0 z-20">
+        <span>&copy; Developed by <a href="https://www.instagram.com/luthafiyyan_/" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Luthafiyyan</a></span>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-1/2 translate-x-1/2 md:translate-x-0 md:right-6 bg-dark-surface text-white px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-green-400"></i>
+        <span id="toastMsg">Action successful</span>
+    </div>
+
+    <!-- Clear Modal (Reset App) -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[100] modal-overlay">
+        <div class="bg-white dark:bg-dark-surface p-6 rounded-lg shadow-xl w-80 text-center transform scale-95 opacity-0 transition-all duration-200" id="modalContent">
+            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-red-500 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" id="modalTitle">Clear All?</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6" id="modalDesc">This will remove all annotations.</p>
+            <div class="flex gap-3">
+                <button id="cancelModal" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium">Cancel</button>
+                <button id="confirmClear" class="flex-1 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Copy Modal -->
+    <div id="manualCopyModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[101] modal-overlay flex-col p-4">
+        <div class="bg-white dark:bg-dark-surface p-4 rounded-lg shadow-xl max-w-4xl w-full flex flex-col items-center">
+            <div class="w-full flex justify-between items-center mb-4">
+                <h3 class="font-semibold text-lg">Copy Image</h3>
+                <button id="closeCopyModal" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            <!-- BG Checkerboard for transparency proof -->
+            <div class="bg-checkerboard p-2 rounded border border-dashed border-gray-300 dark:border-gray-700 w-full flex justify-center overflow-auto max-h-[70vh]">
+                <img id="manualCopyImg" src="" alt="Result" class="max-w-full h-auto border border-gray-200 dark:border-gray-600">
+            </div>
+            <p class="mt-4 text-sm text-center text-gray-600 dark:text-gray-300">
+                <i class="fa-solid fa-arrow-up"></i> 
+                Right-click the image above and select <strong>"Copy Image"</strong>.<br>
+                <span class="text-xs opacity-75">(The checkerboard pattern means transparent background)</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Logic Script -->
+    <script src="js/app.js"></script>
+</body>
+</html>
